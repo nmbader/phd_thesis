@@ -54,9 +54,10 @@ Go to */home/thesis/chapters/ch3/notebooks* and run the notebook.
 
 Go first to */home/thesis/chapters/ch0/notebooks* and run the notebook. This requires the *input_data* directory. Then, go to */home/thesis/chapters/ch4* and run
 ```
+mkdir -p dat fig
 make all
 ``` 
-from the terminal. Peek into the Makefile to see what is happening.
+from the terminal. Peek into the Makefile to see what is happening. Green's functions may take a while when using limited computing power.
 Finally, go to */home/thesis/chapters/ch4/notebooks* and run the notebooks *Radiation_pattern*, *MT_inversion_unstimulated*, *MT_inversion_stimulated*, and *MT_inversion_3d*.
 
 * Chapter 5 (and Appendix D)
@@ -64,6 +65,7 @@ Finally, go to */home/thesis/chapters/ch4/notebooks* and run the notebooks *Radi
 Go to */home/thesis/chapters/ch5*.
 To generate synthetic FWI results and figures, run
 ```
+mkdir -p dat fig
 make all_synthetic
 ```
 then go to the *notebooks* directory and run the notebook *Synthetic_figures*.
@@ -77,7 +79,7 @@ For the field data results and figures, assuming *input_data* is available and C
 
 * Chapter 6
 
-The computation and results in this chapter were performed using Stanford HPC cluster Sherlock and could take hours to days to complete. Go to */home/thesis/chapters/ch6* and follow the instructions in the *Makefile*. For the FWI results, it may be better to submit each computation job manually using Slurm (check for the corresponding targets in the make files). Slurm script examples are provided.
+The computation and results in this chapter were performed using Stanford HPC cluster Sherlock and could take hours to days to complete. Go to */home/thesis/chapters/ch6*, run ```mkdir -p dat fig```, then follow the instructions in the *Makefile*. For the FWI results, it may be better to submit each computation job manually using Slurm (check for the corresponding targets in the make files). Slurm script examples are provided.
 
 * Appendix E
 
@@ -89,8 +91,10 @@ The field data is stored in a separate git repository as a .tar lfs file. If per
 ```
 cd /home
 git clone https://premonition.Stanford.EDU/nmbader/phd_dissertation.git
-cp phd_dissertation/input_data.tar /home/thesis/
-cd /home/thesis/
+cd /home/phd_dissertation
+git lfs pull --include="input_data.tar"
 tar -xvf input_data.tar
-rm input_data.tar
+mv input_data /home/thesis/
+cd /home
+rm -r /home/phd_dissertation
 ```

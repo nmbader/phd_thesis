@@ -46,18 +46,18 @@ ${D}/ch4_srcoord.txt:
 	echo n1=1 n2=1601 n3=100 >> rz.H
 	echo n1=1 n2=1601 n3=100 >> rdip.H
 	Cat sid.H sx.H sz.H rx.H rz.H rdip.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sz.H rx.H rz.H rdip.H srcoord.H
 
 # true locations for one shot and limited offsets
 ${D}/ch4_srcoord_sp49.txt:
 	${Rm} sid.H sx.H sz.H rx.H rz.H rdip.H srcoord.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=0 datapath=${OUT} > sid.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=16 | Scale dscale=1e-5 datapath=${OUT} > rx.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=18 | Scale dscale=1e-5 datapath=${OUT} > rz.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=19 | Scale dscale=1e-5 datapath=${OUT} > sx.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=21 | Scale dscale=1e-5 datapath=${OUT} > sz.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=24 datapath=${OUT} > rdip.H
+	Window < ${ATTR} n3=1 f3=49 f2=150 n2=451 n1=1 f1=0 datapath=${OUT} > sid.H
+	Window < ${ATTR} n3=1 f3=49 f2=150 n2=451 n1=1 f1=16 | Scale dscale=1e-5 datapath=${OUT} > rx.H
+	Window < ${ATTR} n3=1 f3=49 f2=150 n2=451 n1=1 f1=18 | Scale dscale=1e-5 datapath=${OUT} > rz.H
+	Window < ${ATTR} n3=1 f3=49 f2=150 n2=451 n1=1 f1=19 | Scale dscale=1e-5 datapath=${OUT} > sx.H
+	Window < ${ATTR} n3=1 f3=49 f2=150 n2=451 n1=1 f1=21 | Scale dscale=1e-5 datapath=${OUT} > sz.H
+	Window < ${ATTR} n3=1 f3=49 f2=150 n2=451 n1=1 f1=24 datapath=${OUT} > rdip.H
 	echo n1=1 n2=451 n3=1 >> sid.H
 	echo n1=1 n2=451 n3=1 >> sx.H
 	echo n1=1 n2=451 n3=1 >> sz.H
@@ -65,14 +65,14 @@ ${D}/ch4_srcoord_sp49.txt:
 	echo n1=1 n2=451 n3=1 >> rz.H
 	echo n1=1 n2=451 n3=1 >> rdip.H
 	Cat sid.H sx.H sz.H rx.H rz.H rdip.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sz.H rx.H rz.H rdip.H srcoord.H
 
 # all attributes for shots
 ${D}/ch4_sattr.txt:
 	${Rm} sattr.H
 	Window < ${ATTR} n2=1 datapath=${OUT} > sattr.H
-	python ${P}/dumpHeader.py --input=sattr.H >> $@
+	python3 ${P}/dumpHeader.py --input=sattr.H >> $@
 	${Rm} sattr.H
 
 ###############################################################################################################
@@ -137,7 +137,7 @@ ${D}/ch4_das_raw_sp49.H:
 ${D}/ch4_das_proc_sp49.H: ${D}/ch4_das_raw_sp49.H ${D}/ch4_mute_mask.H
 	${Rm} temp.H
 	Window < $(word 2,$^) n3=1 f3=49 datapath=${OUT} > temp.H
-	Math file1=$< file2=temp.H exp='file1*file2' | ${B}/FK_FILTER.x vmin=500 vmax=99999 | Window min2=-650 max2=650 datapath=${OUT} > $@
+	Math file1=$< file2=temp.H exp='file1*file2' | ${B}/FK_FILTER.x vmin=500 vmax=99999 | Window min2=-650.01 n2=1301 datapath=${OUT} > $@
 	${Rm} temp.H
 
 # Compute FX, FK, and FV spectra
@@ -210,21 +210,21 @@ ${D}/ch4_lp250.H:
 
 # AA-filter and resample to 2 ms and select offsets for unstimulated and stimulated sides
 ${D}/ch4_das.H.ss: ${D}/ch4_das.H ${D}/ch4_lp250.H
-	${B}/FX_FILTER.x < $< filter=$(word 2,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 | Window min2=-450 max2=-200 max1=0.3 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 | Window min2=-450.01 n2=251 max1=0.3001 datapath=${OUT} > $@
 
 ${D}/ch4_das.H.sss: ${D}/ch4_das.H ${D}/ch4_lp250.H
-	${B}/FX_FILTER.x < $< filter=$(word 2,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 | Window min2=100 max2=450 max1=0.3 f3=10 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 | Window min2=99.1 n2=351 max1=0.3001 f3=10 datapath=${OUT} > $@
 
 # same for shot 49 for aisotropy scan
 ${D}/ch4_das_sp49.H.ss: ${D}/ch4_das.H ${D}/ch4_lp250.H
-	Window < $< n3=1 f3=49 min2=-650 max2=-200 max1=0.3 | ${B}/FX_FILTER.x filter=$(word 2,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 datapath=${OUT} > $@
+	Window < $< n3=1 f3=49 min2=-650.01 n2=451 max1=0.3001 | ${B}/FX_FILTER.x filter=$(word 2,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 datapath=${OUT} > $@
 
 # resample the mute
 ${D}/ch4_mute_mask.H.ss: ${D}/ch4_mute_mask.H
-	${B}/RESAMPLE.x < $< si=0.002 type=linear | Window min2=-450 max2=-200 max1=0.3 datapath=${OUT} > $@
+	${B}/RESAMPLE.x < $< si=0.002 type=linear | Window min2=-450.01 n2=251  max1=0.3001 datapath=${OUT} > $@
 
 ${D}/ch4_mute_mask.H.sss: ${D}/ch4_mute_mask.H
-	${B}/RESAMPLE.x < $< si=0.002 type=linear | Window min2=100 max2=450 max1=0.3 f3=10 datapath=${OUT} > $@
+	${B}/RESAMPLE.x < $< si=0.002 type=linear | Window min2=99.9 n2=351 max1=0.3001 f3=10 datapath=${OUT} > $@
 
 # band pass filter, scale the filter so that its amplitude spectrum peaks at 1
 ${D}/ch4_bp.H:
@@ -349,19 +349,19 @@ ${D}/ch4_dxGnz.H: ${D}/ch4_dirac.H ${D}/ch4_elasticModelVTI1.H ${D}/ch4_srcoord.
 # for unstimulated side
 ${D}/ch4_dxGnx.H.ss: ${D}/ch4_dxGnx.H ${D}/ch4_mute_mask.H.ss
 	${Rm} temp.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp.H
 	Math file1=temp.H file2=$(word 2, $^) exp='file1*file2' datapath=${OUT} > $@
 	${Rm} temp.H
 
 ${D}/ch4_dzGnz.H.ss: ${D}/ch4_dzGnz.H ${D}/ch4_mute_mask.H.ss
 	${Rm} temp.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp.H
 	Math file1=temp.H file2=$(word 2, $^) exp='file1*file2' datapath=${OUT} > $@
 	${Rm} temp.H
 
 ${D}/ch4_dxGnz.H.ss: ${D}/ch4_dxGnz.H ${D}/ch4_mute_mask.H.ss
 	${Rm} temp.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp.H
 	Math file1=temp.H file2=$(word 2, $^) exp='file1*file2' datapath=${OUT} > $@
 	${Rm} temp.H
 
@@ -377,19 +377,19 @@ ${D}/ch4_dxGnz.H.ss.bp: ${D}/ch4_dxGnz.H.ss ${D}/ch4_bp.H
 # for stimulated side
 ${D}/ch4_dxGnx.H.sss: ${D}/ch4_dxGnx.H ${D}/ch4_mute_mask.H.sss
 	${Rm} temp.H
-	Window min2=100 max2=450 max1=0.3 f3=10 < $< datapath=${OUT} > temp.H
+	Window min2=99.9 n2=351 max1=0.3001 f3=10 < $< datapath=${OUT} > temp.H
 	Math file1=temp.H file2=$(word 2, $^) exp='file1*file2' datapath=${OUT} > $@
 	${Rm} temp.H
 
 ${D}/ch4_dzGnz.H.sss: ${D}/ch4_dzGnz.H ${D}/ch4_mute_mask.H.sss
 	${Rm} temp.H
-	Window min2=100 max2=450 max1=0.3 f3=10 < $< datapath=${OUT} > temp.H
+	Window min2=99.9 n2=351 max1=0.3001 f3=10 < $< datapath=${OUT} > temp.H
 	Math file1=temp.H file2=$(word 2, $^) exp='file1*file2' datapath=${OUT} > $@
 	${Rm} temp.H
 
 ${D}/ch4_dxGnz.H.sss: ${D}/ch4_dxGnz.H ${D}/ch4_mute_mask.H.sss
 	${Rm} temp.H
-	Window min2=100 max2=450 max1=0.3 f3=10 < $< datapath=${OUT} > temp.H
+	Window min2=99.9 n2=351 max1=0.3001 f3=10 < $< datapath=${OUT} > temp.H
 	Math file1=temp.H file2=$(word 2, $^) exp='file1*file2' datapath=${OUT} > $@
 	${Rm} temp.H
 
@@ -444,15 +444,15 @@ ${D}/ch4_dzGnz_homo_sp49.H.bp: ${D}/ch4_dzGnz_homo_sp49.H ${D}/ch4_bp.H
 
 ${D}/ch4_srcoord_3d_sp49.txt:
 	${Rm} sid.H sx.H sy.H sz.H rx.H ry.H rz.H rdip.H raz.H srcoord.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=0 datapath=${OUT} > sid.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=16 | Scale dscale=1e-5 datapath=${OUT} > rx.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=16 | Scale dscale=0.00 datapath=${OUT} > ry.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=18 | Scale dscale=1e-5 datapath=${OUT} > rz.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=19 | Scale dscale=1e-5 datapath=${OUT} > sx.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=19 | Scale dscale=0.00 datapath=${OUT} > sy.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=21 | Scale dscale=1e-5 datapath=${OUT} > sz.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=24 datapath=${OUT} > rdip.H
-	Window < ${ATTR} n3=1 f3=49 min2=-650 max2=-200 n1=1 f1=24 | Scale dscale=0.00 datapath=${OUT} > raz.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=0 datapath=${OUT} > sid.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=16 | Scale dscale=1e-5 datapath=${OUT} > rx.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=16 | Scale dscale=0.00 datapath=${OUT} > ry.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=18 | Scale dscale=1e-5 datapath=${OUT} > rz.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=19 | Scale dscale=1e-5 datapath=${OUT} > sx.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=19 | Scale dscale=0.00 datapath=${OUT} > sy.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=21 | Scale dscale=1e-5 datapath=${OUT} > sz.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=24 datapath=${OUT} > rdip.H
+	Window < ${ATTR} n3=1 f3=49 f2=150.01 n2=451 n1=1 f1=24 | Scale dscale=0.00 datapath=${OUT} > raz.H
 	echo n1=1 n2=451 n3=1 >> sid.H
 	echo n1=1 n2=451 n3=1 >> sx.H
 	echo n1=1 n2=451 n3=1 >> sy.H
@@ -463,7 +463,7 @@ ${D}/ch4_srcoord_3d_sp49.txt:
 	echo n1=1 n2=451 n3=1 >> rdip.H
 	echo n1=1 n2=451 n3=1 >> raz.H
 	Cat sid.H sx.H sy.H sz.H rx.H ry.H rz.H rdip.H raz.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sy.H sz.H rx.H ry.H rz.H rdip.H raz.H srcoord.H
 
 ${D}/ch4_elasticModelVTI1_3d_flat.H: ${D}/ch4_elasticModelVTI1.H
@@ -537,29 +537,29 @@ ${D}/ch4_dxGnx_3d2_sp49.H.hankel: ${D}/ch4_dxGnx_3d2_sp49.H ${D}/ch4_hankel_ss.H
 # Operations on GF's as in the 2D case
 ${D}/ch4_dxGnx_3d_sp49.H.ss.bp: ${D}/ch4_dxGnx_3d_sp49.H.hankel ${D}/ch4_mute_mask.H.ss ${D}/ch4_bp.H
 	${Rm} temp1.H temp2.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp1.H
-	Window min2=-450 max2=-200 max1=0.3 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp1.H
+	Window min2=-450.01 n2=251  max1=0.3001 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
 	Math file1=temp1.H file2=temp2.H exp='file1*file2' |  ${B}/FX_FILTER.x filter=$(word 3,$^) datapath=${OUT} > $@
 	${Rm} temp1.H temp2.H
 
 ${D}/ch4_dyGny_3d_sp49.H.ss.bp: ${D}/ch4_dyGny_3d_sp49.H.hankel ${D}/ch4_mute_mask.H.ss ${D}/ch4_bp.H
 	${Rm} temp1.H temp2.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp1.H
-	Window min2=-450 max2=-200 max1=0.3 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp1.H
+	Window min2=-450.01 n2=251  max1=0.3001 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
 	Math file1=temp1.H file2=temp2.H exp='file1*file2' |  ${B}/FX_FILTER.x filter=$(word 3,$^) datapath=${OUT} > $@
 	${Rm} temp1.H temp2.H
 
 ${D}/ch4_dzGnz_3d_sp49.H.ss.bp: ${D}/ch4_dzGnz_3d_sp49.H.hankel ${D}/ch4_mute_mask.H.ss ${D}/ch4_bp.H
 	${Rm} temp1.H temp2.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp1.H
-	Window min2=-450 max2=-200 max1=0.3 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp1.H
+	Window min2=-450.01 n2=251  max1=0.3001 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
 	Math file1=temp1.H file2=temp2.H exp='file1*file2' |  ${B}/FX_FILTER.x filter=$(word 3,$^) datapath=${OUT} > $@
 	${Rm} temp1.H temp2.H
 
 ${D}/ch4_dxGnx_3d2_sp49.H.ss.bp: ${D}/ch4_dxGnx_3d2_sp49.H.hankel ${D}/ch4_mute_mask.H.ss ${D}/ch4_bp.H
 	${Rm} temp1.H temp2.H
-	Window min2=-450 max2=-200 max1=0.3 < $< datapath=${OUT} > temp1.H
-	Window min2=-450 max2=-200 max1=0.3 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
+	Window min2=-450.01 n2=251  max1=0.3001 < $< datapath=${OUT} > temp1.H
+	Window min2=-450.01 n2=251  max1=0.3001 n3=1 f3=49 < $(word 2, $^) datapath=${OUT} > temp2.H
 	Math file1=temp1.H file2=temp2.H exp='file1*file2' |  ${B}/FX_FILTER.x filter=$(word 3,$^) datapath=${OUT} > $@
 	${Rm} temp1.H temp2.H
 

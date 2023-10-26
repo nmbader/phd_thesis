@@ -44,16 +44,16 @@ SRC_S=${PWD}/../ch4/dat/ch4_all_time_func_s.H
 ${D}/ch5_lp250.H:
 	${Rm} temp.H
 	${B}/GENERATE_WAVELET.x nt=301 dt=0.0005 type=butterworth low_cutoff=0.0 high_cutoff=0.2 half_order=2 phase=zero datapath=${OUT} > temp.H
-	Filter < temp.H filter=temp.H | Filter filter=temp.H | Scale dscale=1 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < temp.H filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | Scale dscale=1 datapath=${OUT} > $@
 	${Rm} temp.H
 
 # AA-filter and resample to 2 ms
 ${D}/ch5_data.H: ${D}/ch5_lp250.H
-	Filter < ${DATA} filter=$(word 1,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < ${DATA} filter=$(word 1,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 datapath=${OUT} > $@
 
 # AA-filter and resample to 2 ms
 ${D}/ch5_data_3d.H: ${D}/ch5_lp250.H
-	Filter < ${DATA_3D} filter=$(word 1,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < ${DATA_3D} filter=$(word 1,$^) | ${B}/RESAMPLE.x si=0.002 type=sinc sinc_half_length=11 datapath=${OUT} > $@
 
 # resample the mute
 ${D}/ch5_mute.H:
@@ -143,11 +143,11 @@ NSRC0_G4=24
 ${D}/ch5_bp.H:
 	${Rm} temp.H
 	${B}/GENERATE_WAVELET.x nt=75 dt=0.002 type=butterworth low_cutoff=0.12 high_cutoff=0.6 half_order=1 phase=zero datapath=${OUT} > temp.H
-	Filter < temp.H filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Scale dscale=1.12197 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < temp.H filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | Scale dscale=1.12197 datapath=${OUT} > $@
 	${Rm} temp.H
 
 ${D}/ch5_data_group4.H.bp: ${D}/ch5_bp.H
-	Window < ${DATA_G4} f2=150 n2=1301 | Filter filter=$(word 1,$^) datapath=${OUT} > $@
+	Window < ${DATA_G4} f2=150 n2=1301 | ${B}/FX_FILTER.x filter=$(word 1,$^) datapath=${OUT} > $@
 
 ${D}/ch5_mute_group4.H.select:
 	Window < ${MUTE_G4} f2=150 n2=1301 datapath=${OUT} > $@
@@ -168,7 +168,7 @@ ${D}/ch5_srcoord_group4.txt:
 	echo n1=1 n2=1301 n3=24 >> rz.H
 	echo n1=1 n2=1301 n3=24 >> rdip.H
 	Cat sid.H sx.H sz.H rx.H rz.H rdip.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sz.H rx.H rz.H rdip.H srcoord.H
 
 ${D}/ch5_syn_group4.H: ${D}/ch5_model.H ${D}/ch5_srcoord_group4.txt
@@ -179,7 +179,7 @@ ${D}/ch5_syn_group4.H: ${D}/ch5_model.H ${D}/ch5_srcoord_group4.txt
 	echo o2=-650 n2=1301 d2=1 n3=24 o3=0 d3=1 >> $@
 
 ${D}/ch5_syn_group4.H.bp: ${D}/ch5_syn_group4.H ${D}/ch5_bp.H
-	Filter < $< filter=$(word 2,$^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) datapath=${OUT} > $@
 
 
 ###############################################################################################################
@@ -208,7 +208,7 @@ ${D}/ch5_srcoord_3d_sp49.txt:
 	echo n1=1 n2=1301 n3=1 >> rdip.H
 	echo n1=1 n2=1301 n3=1 >> raz.H
 	Cat sid.H sx.H sy.H sz.H rx.H ry.H rz.H rdip.H raz.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sy.H sz.H rx.H ry.H rz.H rdip.H raz.H srcoord.H
 
 ${D}/ch5_source_3d_sp49.H: ${D}/ch5_sources.H
@@ -236,10 +236,10 @@ ${D}/ch5_hankel.H:
 	echo o1=-0.6 >> $@
 
 ${D}/ch5_syn_3d_sp49.H.hankel: ${D}/ch5_syn_3d_sp49.H ${D}/ch5_hankel.H
-	Filter < $< filter=$(word 2, $^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2, $^) datapath=${OUT} > $@
 
 ${D}/ch5_syn_3d_sp49.H.hankel.bp: ${D}/ch5_syn_3d_sp49.H.hankel ${D}/ch5_bp.H
-	Filter < $< filter=$(word 2,$^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) datapath=${OUT} > $@
 
 ###############################################################################################################
 # The outputs above are used in AVO_estimation.ipynb for AVO estimation
@@ -256,7 +256,6 @@ AVO_WEIGHTS=./dat/ch5_avo_weights.H
 ###############################################################################################################
 
 include fwi_synthetic.mk
-include synthetic_analysis.mk
 include fwi_unstimulated.mk
 include fwi_stimulated.mk
 

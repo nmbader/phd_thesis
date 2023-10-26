@@ -1,0 +1,10 @@
+**.DS_Store
+**/.vscode
+**/._*
+**/__*
+**/code*
+**/input_data*
+**/dat*
+**/fig*
+**/slurm*
+**/.ipynb_checkpoints*

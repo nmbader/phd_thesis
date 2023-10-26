@@ -34,23 +34,23 @@ ${D}/ch5st_data_group2.H.fv: ${D}/ch5st_data_group2.H
 ${D}/ch5st_bp30100.H:
 	${Rm} temp.H
 	${B}/GENERATE_WAVELET.x nt=75 dt=0.002 type=butterworth low_cutoff=0.12 high_cutoff=0.48 half_order=1 phase=zero datapath=${OUT} > temp.H
-	Filter < temp.H filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Scale dscale=1.28053 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < temp.H filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | Scale dscale=1.28053 datapath=${OUT} > $@
 	${Rm} temp.H
 
 # band-pass filter 30-150 Hz, scale the filter so that its amplitude spectrum peaks at 1
 ${D}/ch5st_bp30150.H:
 	${Rm} temp.H
 	${B}/GENERATE_WAVELET.x nt=75 dt=0.002 type=butterworth low_cutoff=0.12 high_cutoff=0.6 half_order=1 phase=zero datapath=${OUT} > temp.H
-	Filter < temp.H filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Scale dscale=1.12197 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < temp.H filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | Scale dscale=1.12197 datapath=${OUT} > $@
 	${Rm} temp.H
 
 .PRECIOUS: ${D}/ch5st_%.bp30100 ${D}/ch5st_%.bp30150
 
 ${D}/ch5st_%.bp30100: ${D}/ch5st_% ${D}/ch5st_bp30100.H
-	Filter < $< filter=$(word 2,$^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) datapath=${OUT} > $@
 
 ${D}/ch5st_%.bp30150: ${D}/ch5st_% ${D}/ch5st_bp30150.H
-	Filter < $< filter=$(word 2,$^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) datapath=${OUT} > $@
 
 ###############################################################################################################
 # Coordinates

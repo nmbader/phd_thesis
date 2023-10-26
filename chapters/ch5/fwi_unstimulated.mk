@@ -68,23 +68,23 @@ ${D}/ch5un_sources_st_group2.H:
 ${D}/ch5un_bp30100.H:
 	${Rm} temp.H
 	${B}/GENERATE_WAVELET.x nt=75 dt=0.002 type=butterworth low_cutoff=0.12 high_cutoff=0.48 half_order=1 phase=zero datapath=${OUT} > temp.H
-	Filter < temp.H filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Scale dscale=1.28053 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < temp.H filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | Scale dscale=1.28053 datapath=${OUT} > $@
 	${Rm} temp.H
 
 # band-pass filter 30-150 Hz, scale the filter so that its amplitude spectrum peaks at 1
 ${D}/ch5un_bp30150.H:
 	${Rm} temp.H
 	${B}/GENERATE_WAVELET.x nt=75 dt=0.002 type=butterworth low_cutoff=0.12 high_cutoff=0.6 half_order=1 phase=zero datapath=${OUT} > temp.H
-	Filter < temp.H filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Filter filter=temp.H | Scale dscale=1.12197 datapath=${OUT} > $@
+	${B}/FX_FILTER.x < temp.H filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | ${B}/FX_FILTER.x filter=temp.H | Scale dscale=1.12197 datapath=${OUT} > $@
 	${Rm} temp.H
 
 .PRECIOUS: ${D}/ch5un_%.bp30100 ${D}/ch5un_%.bp30150
 
 ${D}/ch5un_%.bp30100: ${D}/ch5un_% ${D}/ch5un_bp30100.H
-	Filter < $< filter=$(word 2,$^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) datapath=${OUT} > $@
 
 ${D}/ch5un_%.bp30150: ${D}/ch5un_% ${D}/ch5un_bp30150.H
-	Filter < $< filter=$(word 2,$^) datapath=${OUT} > $@
+	${B}/FX_FILTER.x < $< filter=$(word 2,$^) datapath=${OUT} > $@
 
 ###############################################################################################################
 # Coordinates
@@ -107,7 +107,7 @@ ${D}/ch5un_srcoord_group1.txt: ${D}/ch5un_data_group1.HH
 	echo n1=1 n2=501 n3=16 >> rz.H
 	echo n1=1 n2=501 n3=16 >> rdip.H
 	Cat sid.H sx.H sz.H rx.H rz.H rdip.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sz.H rx.H rz.H rdip.H srcoord.H
 
 ${D}/ch5un_srcoord_group2.txt: ${D}/ch5un_data_group2.HH
@@ -125,7 +125,7 @@ ${D}/ch5un_srcoord_group2.txt: ${D}/ch5un_data_group2.HH
 	echo n1=1 n2=501 n3=16 >> rz.H
 	echo n1=1 n2=501 n3=16 >> rdip.H
 	Cat sid.H sx.H sz.H rx.H rz.H rdip.H axis=1 datapath=${OUT} > srcoord.H
-	python ${P}/dumpHeader.py --input=srcoord.H >> $@
+	python3 ${P}/dumpHeader.py --input=srcoord.H >> $@
 	${Rm} sid.H sx.H sz.H rx.H rz.H rdip.H srcoord.H
 
 ${D}/ch5un_srcoord_st_group2.txt: ${D}/ch5un_data_st_group2.HH
