@@ -9,7 +9,9 @@ RUN apt-get -y install libelf-dev libffi-dev
 RUN apt-get -y install libfftw3-3 libfftw3-dev libssl-dev
 RUN apt-get -y install flex libxaw7-dev
 RUN apt-get -y install x11-apps
-RUN apt-get -y install texlive-latex-extra texlive-fonts-recommended dvipng cm-super
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get -yq install texlive-latex-extra texlive-fonts-recommended dvipng cm-super
 
 RUN apt-get -y update
 RUN apt-get -y install python3-pip

@@ -9,7 +9,7 @@
 
 ## Description
 
-This project aims at reproducing the results in the PhD dissertation "**SEISMIC SOURCE AND ELASTIC FULL-WAVEFORM INVERSION USING DISTRIBUTED ACOUSTIC SENSING AND PERFORATION SHOTS IN UNCONVENTIONAL RESERVOIRS**" published by Stanford University in 2023 and authored by *Milad Bader*.
+This project aims at reproducing the results in the PhD dissertation "**SEISMIC SOURCE AND ELASTIC FULL-WAVEFORM INVERSION USING DISTRIBUTED ACOUSTIC SENSING AND PERFORATION SHOTS IN UNCONVENTIONAL RESERVOIRS**" published by Stanford University in 2023 and authored by *Milad Bader*. The dissertation can be accessed [here](https://sep.sites.stanford.edu/publications/theses/seismic-source-and-elastic-full-waveform-inversion-using-distributed-acoustic).
 
 ## Installation with Docker
 
